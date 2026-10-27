@@ -1,9 +1,14 @@
-name: Update Tank Marks
+name: Update Marks and Deploy Site
 
 on:
   schedule:
-    - cron: '30 1,9 * * *' # Запуск в 04:30 и 12:00 по МСК (UTC+3)
-  workflow_dispatch:      # Кнопка ручного запуска на вкладке Actions
+    - cron: '30 1,9 * * *' # Запуск в 04:30 и 12:00 по МСК
+  workflow_dispatch:      # Кнопка ручного запуска
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
 
 jobs:
   update-data:
@@ -31,3 +36,22 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add data/
           git diff --staged --quiet || (git commit -m "Auto-update tank marks data" && git push)
+
+  deploy:
+    needs: update-data
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.' # Публикуем корень репозитория (где лежат index.html и папка data)
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
