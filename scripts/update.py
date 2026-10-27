@@ -64,7 +64,7 @@ def main():
                 "role": v[12] if len(v) > 12 else ""
             }
 
-   print(f"Фильтры применились: {len(vehicles_map)} танков V-XI уровней найдено в базе.")
+    print(f"Фильтры применились: {len(vehicles_map)} танков V-XI уровней найдено в базе.")
 
     # 2. Загружаем актуальные планки отметок (65, 85, 95, 100)
     marks_data = fetch_json(MARKS_URL)
@@ -80,7 +80,7 @@ def main():
     for item in raw_marks:
         tank_id = item["id"]
         if tank_id not in vehicles_map:
-            continue # Пропускаем танки ниже V уровня или клоны для Линии фронта
+            continue
         
         marks = item.get("marks", {})
         m65 = marks.get("65")
@@ -91,7 +91,7 @@ def main():
         # Базовая валидация логики порогов
         if m65 and m85 and m95:
             if not (m65 < m85 < m95):
-                continue # Пропускаем аномальные данные
+                continue
 
         tank_info = vehicles_map[tank_id]
         tank_info["marks"] = {
@@ -104,7 +104,7 @@ def main():
         result_list.append(tank_info)
         updated_count += 1
 
-        # Сохранение суточной истории для графиков (lazy-loading файлы по tank_id)
+        # Сохранение суточной истории для графиков
         history_file = os.path.join(HISTORY_DIR, f"{tank_id}.json")
         history_data = []
         if os.path.exists(history_file):
@@ -114,7 +114,6 @@ def main():
             except:
                 history_data = []
 
-        # Добавляем сегодняшнюю точку, если её еще нет
         if not history_data or history_data[-1].get("date") != today_str:
             history_data.append({
                 "date": today_str,
@@ -123,14 +122,12 @@ def main():
                 "95": m95,
                 "100": m100
             })
-            # Ограничиваем историю максимум 365 днями для легкости
             if len(history_data) > 365:
                 history_data = history_data[-365:]
 
             with open(history_file, "w", encoding="utf-8") as f:
                 json.dump(history_data, f, ensure_ascii=False)
 
-    # Проверка полноты базы (защита от сбоев источника)
     if updated_count < 400:
         raise Exception(f"Критическая ошибка: получено слишком мало танков ({updated_count}), обновление отменяется!")
 
@@ -146,7 +143,7 @@ def main():
     with open(latest_path, "w", encoding="utf-8") as f:
         json.dump(output_data, f, ensure_ascii=False, separators=(',', ':'))
 
-    print(f" Успешно! Обновлено танков: {updated_count}. Файл {latest_path} сохранен.")
+    print(f"Успешно! Обновлено танков: {updated_count}. Файл {latest_path} сохранен.")
 
 if __name__ == "__main__":
     main()
