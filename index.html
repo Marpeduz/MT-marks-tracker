@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TANK MARKS • Мир Танков</title>
     
-    <!-- Фавикон вкладки браузера (Векторный прицел) -->
+    <!-- Иконка во вкладке браузера (Favicon) -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%230B0B10' stroke='%238B5CF6' stroke-width='2'/%3E%3Ccircle cx='16' cy='16' r='7' fill='none' stroke='%23C084FC' stroke-width='1.5' stroke-dasharray='3 2'/%3E%3Ccircle cx='16' cy='16' r='2.5' fill='%23C084FC'/%3E%3Cpath d='M16 2v6M16 24v6M2 16h6M24 16h6' stroke='%238B5CF6' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E">
 
     <!-- Tailwind CSS -->
@@ -41,8 +41,8 @@
     <header class="sticky top-0 z-40 backdrop-blur-md bg-obsidian/90 border-b border-white/10">
         <div class="max-w-7xl mx-auto px-4 py-3 flex flex-col md:flex-row items-center justify-between gap-4">
             <div class="flex items-center gap-3">
-                <!-- Векторная иконка сайта -->
-                <div class="w-10 h-10 rounded-xl bg-neonViolet/15 border border-neonViolet/30 flex items-center justify-center shadow-lg shadow-neonViolet/20">
+                <!-- Иконка сайта около названия -->
+                <div class="w-10 h-10 rounded-xl bg-neonViolet/15 border border-neonViolet/30 flex items-center justify-center shadow-lg shadow-neonViolet/20 shrink-0">
                     <svg class="w-6 h-6 text-neonGlow" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                         <circle cx="12" cy="12" r="9" stroke-width="1.8" class="text-neonViolet" />
                         <circle cx="12" cy="12" r="4.5" stroke-width="1.4" stroke-dasharray="2 2" />
@@ -145,7 +145,7 @@
             <button onclick="closeModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-base font-bold w-8 h-8 rounded-full bg-white/5 flex items-center justify-center transition-colors">✕</button>
             
             <div class="flex items-center gap-3 mb-6">
-                <div id="modalClassIcon" class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center"></div>
+                <div id="modalClassIcon" class="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center"></div>
                 <div>
                     <h2 id="modalTankName" class="text-lg font-bold text-white leading-tight">Название танка</h2>
                     <p id="modalTankSub" class="text-xs text-slate-400 mt-0.5">Уровень • Класс</p>
@@ -196,34 +196,38 @@
         let activeTankId = null;
         let chartInstance = null;
 
-        // Векторные силуэты классов танков из WoT
+        // Векторные силуэты классов танков точно как у Полироида (WoT)
         function getClassSvg(type) {
             switch(type) {
-                case 'heavyTank':
-                    return `<svg class="w-4 h-4 fill-slate-300 group-hover:fill-neonGlow transition-colors" viewBox="0 0 24 24">
-                        <rect x="4" y="4" width="3.5" height="16" rx="0.5"/>
-                        <rect x="10.25" y="4" width="3.5" height="16" rx="0.5"/>
-                        <rect x="16.5" y="4" width="3.5" height="16" rx="0.5"/>
+                case 'heavyTank': // ТТ: 3 диагональные полоски в ромбе
+                    return `<svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="#F59E0B">
+                        <g transform="rotate(-45 12 12)">
+                            <rect x="5" y="5" width="3.2" height="14" rx="0.5"/>
+                            <rect x="10.3" y="5" width="3.4" height="14" rx="0.5"/>
+                            <rect x="15.8" y="5" width="3.2" height="14" rx="0.5"/>
+                        </g>
                     </svg>`;
-                case 'mediumTank':
-                    return `<svg class="w-4 h-4 fill-slate-300 group-hover:fill-neonGlow transition-colors" viewBox="0 0 24 24">
-                        <polygon points="9,4 5,20 8.5,20 12.5,4"/>
-                        <polygon points="17,4 13,20 16.5,20 20.5,4"/>
+                case 'mediumTank': // СТ: 2 диагональные полоски в ромбе
+                    return `<svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="#F59E0B">
+                        <g transform="rotate(-45 12 12)">
+                            <rect x="5" y="5" width="5.3" height="14" rx="0.5"/>
+                            <rect x="13.7" y="5" width="5.3" height="14" rx="0.5"/>
+                        </g>
                     </svg>`;
-                case 'lightTank':
-                    return `<svg class="w-4 h-4 fill-slate-300 group-hover:fill-neonGlow transition-colors" viewBox="0 0 24 24">
-                        <polygon points="12,3 21,12 12,21 3,12"/>
+                case 'lightTank': // ЛТ: сплошной ромб
+                    return `<svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="#F59E0B">
+                        <rect x="5.5" y="5.5" width="13" height="13" rx="0.5" transform="rotate(-45 12 12)"/>
                     </svg>`;
-                case 'AT-SPG':
-                    return `<svg class="w-4 h-4 fill-slate-300 group-hover:fill-neonGlow transition-colors" viewBox="0 0 24 24">
-                        <polygon points="3,5 21,5 12,20"/>
+                case 'AT-SPG': // ПТ: перевернутый треугольник
+                    return `<svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="#F59E0B">
+                        <polygon points="4,6 20,6 12,19"/>
                     </svg>`;
-                case 'SPG':
-                    return `<svg class="w-4 h-4 fill-slate-300 group-hover:fill-neonGlow transition-colors" viewBox="0 0 24 24">
-                        <rect x="5" y="5" width="14" height="14" rx="1"/>
+                case 'SPG': // САУ: сплошной квадрат
+                    return `<svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="#F59E0B">
+                        <rect x="5.5" y="5.5" width="13" height="13" rx="1"/>
                     </svg>`;
                 default:
-                    return `<svg class="w-4 h-4 fill-slate-400" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"/></svg>`;
+                    return `<svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="#F59E0B"><circle cx="12" cy="12" r="7"/></svg>`;
             }
         }
 
@@ -316,7 +320,7 @@
                     <tr onclick="openTankModal(${t.id})" class="hover:bg-white/[0.03] cursor-pointer transition-colors group">
                         <td class="py-3 px-4">
                             <div class="flex items-center gap-3">
-                                <div class="w-5 h-5 flex items-center justify-center opacity-85 group-hover:opacity-100 transition-opacity">
+                                <div class="w-5 h-5 flex items-center justify-center">
                                     ${getClassSvg(t.type)}
                                 </div>
                                 <div class="font-medium text-white group-hover:text-neonGlow transition-colors">${t.name}</div>
@@ -348,7 +352,7 @@
             renderTable();
         }
 
-        // Фильтры
+        // Фильтры уровней
         document.querySelectorAll('.tier-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 document.querySelectorAll('.tier-btn').forEach(b => {
@@ -362,6 +366,7 @@
             });
         });
 
+        // Фильтры классов
         document.querySelectorAll('.class-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 document.querySelectorAll('.class-btn').forEach(b => {
@@ -375,6 +380,7 @@
             });
         });
 
+        // Фильтры типов (прокачиваемые / премы)
         document.querySelectorAll('.type-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 document.querySelectorAll('.type-btn').forEach(b => {
@@ -392,6 +398,7 @@
             renderTable();
         });
 
+        // Модальное окно
         async function openTankModal(tankId) {
             activeTankId = tankId;
             const tank = allTanks.find(t => t.id === tankId);
