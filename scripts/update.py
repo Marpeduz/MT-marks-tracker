@@ -64,7 +64,7 @@ def main():
                 "role": v[12] if len(v) > 12 else ""
             }
 
-    print(فلтры применились: {len(vehicles_map)} танков V-XI уровней найдено в базе.)
+   print(f"Фильтры применились: {len(vehicles_map)} танков V-XI уровней найдено в базе.")
 
     # 2. Загружаем актуальные планки отметок (65, 85, 95, 100)
     marks_data = fetch_json(MARKS_URL)
