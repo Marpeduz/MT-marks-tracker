@@ -1,1 +1,512 @@
+<!DOCTYPE html>
+<html lang="ru" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Трекер отметок • Мир Танков</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        obsidian: '#0B0B10',
+                        slateCard: '#161522',
+                        neonViolet: '#8B5CF6',
+                        neonGlow: '#C084FC',
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Chart.js для графиков -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { background-color: #0B0B10; color: #F8FAFC; font-family: system-ui, -apple-system, sans-serif; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #0B0B10; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #2D2B42; border-radius: 3px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #8B5CF6; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-neonViolet selection:text-white">
 
+    <!-- Верхняя панель -->
+    <header class="sticky top-0 z-40 backdrop-blur-md bg-obsidian/80 border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-neonViolet to-purple-800 flex items-center justify-center shadow-lg shadow-neonViolet/20 font-bold text-xl">
+                    🎯
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg tracking-wide text-white flex items-center gap-2">
+                        TANK<span class="text-neonViolet">MARKS</span> <span class="text-xs px-2 py-0.5 rounded-full bg-neonViolet/20 text-neonGlow border border-neonViolet/30">Lesta RU</span>
+                    </h1>
+                    <p class="text-xs text-slate-400" id="lastUpdated">Загрузка данных...</p>
+                </div>
+            </div>
+
+            <!-- Живой поиск -->
+            <div class="w-full md:w-96 relative">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">🔍</span>
+                <input type="text" id="searchInput" placeholder="Поиск по названию или сленгу (конь, бабаха, 279...)" 
+                    class="w-full pl-10 pr-4 py-2 bg-slateCard border border-white/10 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-neonViolet transition-all">
+            </div>
+        </div>
+    </header>
+
+    <!-- Основной контент -->
+    <main class="max-w-7xl mx-auto px-4 py-6 flex-grow w-full">
+        
+        <!-- Панель фильтров -->
+        <div class="bg-slateCard border border-white/5 rounded-2xl p-4 mb-6 shadow-xl space-y-4">
+            <!-- Уровни -->
+            <div>
+                <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider block mb-2">Уровень техники</span>
+                <div class="flex flex-wrap gap-1.5" id="tierFilters">
+                    <button data-tier="all" class="tier-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-neonViolet text-white transition-all">Все</button>
+                    <button data-tier="5" class="tier-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-white/5 text-slate-300 hover:bg-white/10 transition-all">V</button>
+                    <button data-tier="6" class="tier-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-white/5 text-slate-300 hover:bg-white/10 transition-all">VI</button>
+                    <button data-tier="7" class="tier-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-white/5 text-slate-300 hover:bg-white/10 transition-all">VII</button>
+                    <button data-tier="8" class="tier-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-white/5 text-slate-300 hover:bg-white/10 transition-all">VIII</button>
+                    <button data-tier="9" class="tier-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-white/5 text-slate-300 hover:bg-white/10 transition-all">IX</button>
+                    <button data-tier="10" class="tier-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-white/5 text-slate-300 hover:bg-white/10 transition-all">X</button>
+                    <button data-tier="11" class="tier-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-neonViolet/20 text-neonGlow border border-neonViolet/40 hover:bg-neonViolet/30 transition-all">XI ✦</button>
+                </div>
+            </div>
+
+            <!-- Классы и нации -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t border-white/5">
+                <div>
+                    <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider block mb-2">Класс техники</span>
+                    <div class="flex flex-wrap gap-1.5" id="classFilters">
+                        <button data-class="all" class="class-btn px-3 py-1 rounded-lg text-xs font-medium bg-neonViolet text-white transition-all">Все</button>
+                        <button data-class="heavyTank" class="class-btn px-3 py-1 rounded-lg text-xs font-medium bg-white/5 text-slate-300 hover:bg-white/10 transition-all">ТТ</button>
+                        <button data-class="mediumTank" class="class-btn px-3 py-1 rounded-lg text-xs font-medium bg-white/5 text-slate-300 hover:bg-white/10 transition-all">СТ</button>
+                        <button data-class="lightTank" class="class-btn px-3 py-1 rounded-lg text-xs font-medium bg-white/5 text-slate-300 hover:bg-white/10 transition-all">ЛТ</button>
+                        <button data-class="AT-SPG" class="class-btn px-3 py-1 rounded-lg text-xs font-medium bg-white/5 text-slate-300 hover:bg-white/10 transition-all">ПТ</button>
+                        <button data-class="SPG" class="class-btn px-3 py-1 rounded-lg text-xs font-medium bg-white/5 text-slate-300 hover:bg-white/10 transition-all">САУ</button>
+                    </div>
+                </div>
+                <div>
+                    <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider block mb-2">Тип получения</span>
+                    <div class="flex flex-wrap gap-1.5" id="typeFilters">
+                        <button data-type="all" class="type-btn px-3 py-1 rounded-lg text-xs font-medium bg-neonViolet text-white transition-all">Все</button>
+                        <button data-type="tech" class="type-btn px-3 py-1 rounded-lg text-xs font-medium bg-white/5 text-slate-300 hover:bg-white/10 transition-all">Прокачиваемые</button>
+                        <button data-type="prem" class="type-btn px-3 py-1 rounded-lg text-xs font-medium bg-white/5 text-slate-300 hover:bg-white/10 transition-all">Премиум / Акционные</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Таблица данных -->
+        <div class="bg-slateCard border border-white/5 rounded-2xl shadow-2xl overflow-hidden">
+            <div class="overflow-x-auto custom-scrollbar">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="border-b border-white/10 text-xs font-semibold text-slate-400 uppercase bg-black/20">
+                            <th class="py-4 px-4 cursor-pointer hover:text-white transition-colors" onclick="sortTable('name')">Танк ↕</th>
+                            <th class="py-4 px-3 text-center cursor-pointer hover:text-white transition-colors" onclick="sortTable('tier')">Ур. ↕</th>
+                            <th class="py-4 px-3 text-center cursor-pointer hover:text-white transition-colors" onclick="sortTable('m65')">65% (1 отм) ↕</th>
+                            <th class="py-4 px-3 text-center cursor-pointer hover:text-white transition-colors" onclick="sortTable('m85')">85% (2 отм) ↕</th>
+                            <th class="py-4 px-3 text-center cursor-pointer hover:text-white transition-colors" onclick="sortTable('m95')">95% (3 отм) ↕</th>
+                            <th class="py-4 px-3 text-center cursor-pointer hover:text-white transition-colors" onclick="sortTable('m100')">100% (MAX) ↕</th>
+                            <th class="py-4 px-3 text-center">График</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tankTableBody" class="divide-y divide-white/5 text-sm">
+                        <tr>
+                            <td colspan="7" class="py-8 text-center text-slate-500">Загрузка базы данных танков...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Модальное окно (Паспорт танка / График) -->
+    <div id="tankModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm hidden p-4">
+        <div class="bg-slateCard border border-white/10 rounded-2xl max-w-2xl w-full p-6 shadow-2xl relative animate-in fade-in zoom-in duration-150">
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg font-bold w-8 h-8 rounded-full bg-white/5 flex items-center justify-center transition-colors">✕</button>
+            
+            <div class="flex items-center gap-3 mb-6">
+                <div class="w-12 h-12 rounded-xl bg-neonViolet/20 border border-neonViolet/30 flex items-center justify-center text-2xl">🛡️</div>
+                <div>
+                    <h2 id="modalTankName" class="text-xl font-bold text-white">Название танка</h2>
+                    <p id="modalTankSub" class="text-xs text-slate-400">Уровень • Класс • Нация</p>
+                </div>
+            </div>
+
+            <!-- Текущие планки в модалке -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+                <div class="bg-black/20 p-3 rounded-xl border border-white/5 text-center">
+                    <span class="text-[10px] text-amber-600 block uppercase font-bold">65% (1 отм)</span>
+                    <span id="modalM65" class="text-base font-bold text-amber-500">-</span>
+                </div>
+                <div class="bg-black/20 p-3 rounded-xl border border-white/5 text-center">
+                    <span class="text-[10px] text-slate-400 block uppercase font-bold">85% (2 отм)</span>
+                    <span id="modalM85" class="text-base font-bold text-slate-200">-</span>
+                </div>
+                <div class="bg-black/20 p-3 rounded-xl border border-white/5 text-center">
+                    <span class="text-[10px] text-yellow-500 block uppercase font-bold">95% (3 отм)</span>
+                    <span id="modalM95" class="text-base font-bold text-yellow-400">-</span>
+                </div>
+                <div class="bg-black/20 p-3 rounded-xl border border-white/5 text-center">
+                    <span class="text-[10px] text-neonGlow block uppercase font-bold">100% (MAX)</span>
+                    <span id="modalM100" class="text-base font-bold text-neonGlow">-</span>
+                </div>
+            </div>
+
+            <!-- Калькулятор урона -->
+            <div class="bg-black/30 p-4 rounded-xl border border-white/5 mb-6">
+                <span class="text-xs font-semibold text-slate-300 block mb-2">🧮 Калькулятор прогресса отметок</span>
+                <div class="flex gap-3">
+                    <input type="number" id="userDamageInput" placeholder="Ваш средний суммарный урон..." 
+                        class="flex-grow px-3 py-2 bg-obsidian border border-white/10 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-neonViolet">
+                    <button onclick="calculateProgress()" class="px-4 py-2 bg-neonViolet hover:bg-purple-600 text-white rounded-lg text-sm font-medium transition-colors">Рассчитать</button>
+                </div>
+                <p id="calcResult" class="text-xs text-slate-400 mt-2">Введите ваш средний суммарный урон (урон + ассист), чтобы узнать остаток.</p>
+            </div>
+
+            <!-- График динамики -->
+            <div class="relative h-64 w-full">
+                <canvas id="historyChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Футер -->
+    <footer class="border-t border-white/10 py-6 mt-12 bg-obsidian">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500">
+            <p>Неофициальный сервис отслеживания отметок в игре «Мир Танков» (Lesta Games).</p>
+            <p class="mt-1">Данные обновляются автоматически через GitHub Actions и базу Poliroid.</p>
+        </div>
+    </footer>
+
+    <!-- Логика работы приложения -->
+    <script>
+        let allTanks = [];
+        let currentTier = 'all';
+        let currentClass = 'all';
+        let currentType = 'all';
+        let currentSort = { field: 'm95', asc: false };
+        let activeTankId = null;
+        let chartInstance = null;
+
+        // Сленговый словарь для быстрого поиска
+        const slangMap = {
+            'конь': 'super conqueror',
+            'бабаха': 'fv4005',
+            'огурец': '279',
+            'дед': 'ис-7',
+            'гриль': 'grille',
+            'бурасик': 'bourrasque',
+            'ебр': 'ebr',
+            'лео': 'leopard',
+            'щель': 'badger'
+        };
+
+        // Загрузка данных
+        async function loadData() {
+            try {
+                const response = await fetch('./data/latest.json');
+                if (!response.ok) throw new Error('Файл данных не найден');
+                const data = await response.json();
+                
+                allTanks = data.vehicles || [];
+                
+                if (data.updated_at) {
+                    const date = new Date(data.updated_at);
+                    document.getElementById('lastUpdated').innerText = `База обновлена: ${date.toLocaleDateString()} ${date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+                }
+
+                renderTable();
+            } catch (err) {
+                console.error(err);
+                document.getElementById('tankTableBody').innerHTML = `<tr><td colspan="7" class="py-8 text-center text-red-400">⚠️ Не удалось загрузить файл <code class="bg-black/30 px-2 py-1 rounded">data/latest.json</code>. Убедитесь, что скрипт GitHub Actions успешно отработал хотя бы один раз.</td></tr>`;
+            }
+        }
+
+        // Рендер таблицы
+        function renderTable() {
+            const tbody = document.getElementById('tankTableBody');
+            const searchVal = document.getElementById('searchInput').value.toLowerCase().trim();
+            
+            // Обработка сленга
+            let query = searchVal;
+            if (slangMap[searchVal]) {
+                query = slangMap[searchVal];
+            }
+
+            const filtered = allTanks.filter(t => {
+                // Фильтр по уровню
+                if (currentTier !== 'all' && t.tier !== parseInt(currentTier)) return false;
+                // Фильтр по классу
+                if (currentClass !== 'all' && t.type !== currentClass) return false;
+                // Фильтр по типу (прокачиваемый / прем)
+                if (currentType === 'tech' && (t.is_premium || t.is_special)) return false;
+                if (currentType === 'prem' && (!t.is_premium && !t.is_special)) return false;
+                // Поиск
+                if (query) {
+                    const nameRu = (t.name || '').toLowerCase();
+                    const shortName = (t.short_name || '').toLowerCase();
+                    const tag = (t.tag || '').toLowerCase();
+                    if (!nameRu.includes(query) && !shortName.includes(query) && !tag.includes(query)) return false;
+                }
+                return true;
+            });
+
+            // Сортировка
+            filtered.sort((a, b) => {
+                let valA, valB;
+                if (currentSort.field === 'name') {
+                    valA = a.name || '';
+                    valB = b.name || '';
+                    return currentSort.asc ? valA.localeCompare(valB) : valB.localeCompare(valA);
+                } else if (currentSort.field === 'tier') {
+                    valA = a.tier || 0;
+                    valB = b.tier || 0;
+                } else {
+                    valA = (a.marks && a.marks[currentSort.field]) || 0;
+                    valB = (b.marks && b.marks[currentSort.field]) || 0;
+                }
+                return currentSort.asc ? valA - valB : valB - valA;
+            });
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="py-8 text-center text-slate-500">Танки по вашему запросу не найдены.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(t => {
+                const m = t.marks || {};
+                const tierRoman = ['', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI'][t.tier] || t.tier;
+                
+                let classIcon = '🛡️';
+                if (t.type === 'mediumTank') classIcon = '⚡';
+                if (t.type === 'lightTank') classIcon = '👁️';
+                if (t.type === 'AT-SPG') classIcon = '🎯';
+                if (t.type === 'SPG') classIcon = '💣';
+
+                return `
+                    <tr onclick="openTankModal(${t.id})" class="hover:bg-white/[0.03] cursor-pointer transition-colors group">
+                        <td class="py-3.5 px-4">
+                            <div class="flex items-center gap-3">
+                                <span class="text-lg">${classIcon}</span>
+                                <div>
+                                    <div class="font-medium text-white group-hover:text-neonGlow transition-colors">${t.name}</div>
+                                    <div class="text-xs text-slate-400">${t.nation.toUpperCase()} • ${t.tag}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="py-3.5 px-3 text-center font-bold ${t.tier === 11 ? 'text-neonGlow' : 'text-slate-300'}">${tierRoman}</td>
+                        <td class="py-3.5 px-3 text-center text-amber-500 font-medium">${m['65'] || '-'}</td>
+                        <td class="py-3.5 px-3 text-center text-slate-200 font-medium">${m['85'] || '-'}</td>
+                        <td class="py-3.5 px-3 text-center text-yellow-400 font-bold">${m['95'] || '-'}</td>
+                        <td class="py-3.5 px-3 text-center text-neonGlow font-bold">${m['100'] ? m['100'] + ' 👑' : '-'}</td>
+                        <td class="py-3.5 px-3 text-center">
+                            <button class="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-neonViolet text-slate-300 hover:text-white text-xs transition-colors">📊 График</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Сортировка таблицы
+        function sortTable(field) {
+            if (currentSort.field === field) {
+                currentSort.asc = !currentSort.asc;
+            } else {
+                currentSort.field = field;
+                currentSort.asc = field === 'name' || field === 'tier';
+            }
+            renderTable();
+        }
+
+        // Обработчики фильтров
+        document.querySelectorAll('.tier-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.tier-btn').forEach(b => {
+                    b.classList.remove('bg-neonViolet', 'text-white', 'border', 'border-neonViolet/40');
+                    b.classList.add('bg-white/5', 'text-slate-300');
+                });
+                e.target.classList.remove('bg-white/5', 'text-slate-300');
+                if(e.target.dataset.tier === '11') {
+                    e.target.classList.add('bg-neonViolet/20', 'text-neonGlow', 'border', 'border-neonViolet/40');
+                } else {
+                    e.target.classList.add('bg-neonViolet', 'text-white');
+                }
+                currentTier = e.target.dataset.tier;
+                renderTable();
+            });
+        });
+
+        document.querySelectorAll('.class-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.class-btn').forEach(b => {
+                    b.classList.remove('bg-neonViolet', 'text-white');
+                    b.classList.add('bg-white/5', 'text-slate-300');
+                });
+                e.target.classList.remove('bg-white/5', 'text-slate-300');
+                e.target.classList.add('bg-neonViolet', 'text-white');
+                currentClass = e.target.dataset.class;
+                renderTable();
+            });
+        });
+
+        document.querySelectorAll('.type-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.type-btn').forEach(b => {
+                    b.classList.remove('bg-neonViolet', 'text-white');
+                    b.classList.add('bg-white/5', 'text-slate-300');
+                });
+                e.target.classList.remove('bg-white/5', 'text-slate-300');
+                e.target.classList.add('bg-neonViolet', 'text-white');
+                currentType = e.target.dataset.type;
+                renderTable();
+            });
+        });
+
+        document.getElementById('searchInput').addEventListener('input', () => {
+            renderTable();
+        });
+
+        // Модальное окно и график истории
+        async function openTankModal(tankId) {
+            activeTankId = tankId;
+            const tank = allTanks.find(t => t.id === tankId);
+            if (!tank) return;
+
+            const tierRoman = ['', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI'][tank.tier] || tank.tier;
+            document.getElementById('modalTankName').innerText = tank.name;
+            document.getElementById('modalTankSub').innerText = `${tierRoman} уровень • ${tank.type} • ${tank.nation.toUpperCase()}`;
+
+            const m = tank.marks || {};
+            document.getElementById('modalM65').innerText = m['65'] || '-';
+            document.getElementById('modalM85').innerText = m['85'] || '-';
+            document.getElementById('modalM95').innerText = m['95'] || '-';
+            document.getElementById('modalM100').innerText = m['100'] ? m['100'] + ' 👑' : '-';
+
+            document.getElementById('userDamageInput').value = '';
+            document.getElementById('calcResult').innerText = 'Введите ваш средний суммарный урон (урон + ассист), чтобы узнать остаток.';
+
+            document.getElementById('tankModal').classList.remove('hidden');
+
+            // Загрузка истории для графика
+            await loadTankHistory(tankId, m);
+        }
+
+        function closeModal() {
+            document.getElementById('tankModal').classList.add('hidden');
+            if (chartInstance) {
+                chartInstance.destroy();
+                chartInstance = null;
+            }
+        }
+
+        // Калькулятор прогресса
+        function calculateProgress() {
+            const tank = allTanks.find(t => t.id === activeTankId);
+            if (!tank || !tank.marks) return;
+            
+            const userDmg = parseFloat(document.getElementById('userDamageInput').value);
+            const resEl = document.getElementById('calcResult');
+
+            if (isNaN(userDmg) || userDmg <= 0) {
+                resEl.innerText = '⚠️ Пожалуйста, введите корректное число урона.';
+                return;
+            }
+
+            const m65 = tank.marks['65'] || 0;
+            const m85 = tank.marks['85'] || 0;
+            const m95 = tank.marks['95'] || 0;
+            const m100 = tank.marks['100'] || 0;
+
+            if (userDmg < m65) {
+                resEl.innerHTML = `❌ Ваш урон (${userDmg}) ниже планки 1 отметки (${m65}). До 65% не хватает <span class="text-amber-500 font-bold">${m65 - userDmg}</span> урона.`;
+            } else if (userDmg < m85) {
+                resEl.innerHTML = `⭐ У вас уверенная 1 отметка! До 2 отметок (85% — ${m85}) не хватает <span class="text-slate-200 font-bold">${m85 - userDmg}</span> урона.`;
+            } else if (userDmg < m95) {
+                resEl.innerHTML = `🌟 Отличный результат, у вас 2 отметки! До заветной 3 отметки (95% — ${m95}) осталось набрать <span class="text-yellow-400 font-bold">${m95 - userDmg}</span> урона.`;
+            } else if (m100 && userDmg < m100) {
+                resEl.innerHTML = `🔥 Потрясающе, у вас 3 отметки! До абсолютного максимума (100% — ${m100}) осталось <span class="text-neonGlow font-bold">${m100 - userDmg}</span> урона.`;
+            } else {
+                resEl.innerHTML = `👑 Вы абсолютный киберспортсмен! Ваш урон превосходит даже планку топ-1 игрока (100%).`;
+            }
+        }
+
+        async function loadTankHistory(tankId, currentMarks) {
+            let history = [];
+            try {
+                const res = await fetch(`./data/history/${tankId}.json`);
+                if (res.ok) {
+                    history = await res.json();
+                }
+            } catch (e) {
+                console.log('История пока не накопилась для этого танка');
+            }
+
+            // Если истории в файле еще нет (первый день запуска), создаем симуляцию из текущей точки
+            if (!history || history.length === 0) {
+                const today = new Date().toISOString().split('T')[0];
+                history = [{ date: today, '65': currentMarks['65'], '85': currentMarks['85'], '95': currentMarks['95'], '100': currentMarks['100'] }];
+            }
+
+            const labels = history.map(h => h.date);
+            const data95 = history.map(h => h['95']);
+            const data100 = history.map(h => h['100']);
+
+            const ctx = document.getElementById('historyChart').getContext('2d');
+            if (chartInstance) chartInstance.destroy();
+
+            chartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: '95% (3 отметки)',
+                            data: data95,
+                            borderColor: '#FACC15',
+                            backgroundColor: 'rgba(250, 204, 21, 0.1)',
+                            borderWidth: 2,
+                            tension: 0.2,
+                            fill: true
+                        },
+                        {
+                            label: '100% (Максимум)',
+                            data: data100,
+                            borderColor: '#C084FC',
+                            backgroundColor: 'rgba(192, 132, 252, 0.1)',
+                            borderWidth: 2,
+                            tension: 0.2,
+                            fill: true
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { labels: { color: '#CBD5E1', font: { size: 11 } } }
+                    },
+                    scales: {
+                        x: { ticks: { color: '#64748B', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                        y: { ticks: { color: '#64748B', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.05)' } }
+                    }
+                }
+            });
+        }
+
+        // Закрытие модалки по клику вне окна
+        document.getElementById('tankModal').addEventListener('click', (e) => {
+            if (e.target.id === 'tankModal') closeModal();
+        });
+
+        // Запуск при загрузке
+        loadData();
+    </script>
+</body>
+</html>
