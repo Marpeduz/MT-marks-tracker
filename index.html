@@ -155,16 +155,16 @@
                             Ур. <span id="sort-tier" class="text-slate-600 ml-0.5">↕</span>
                         </th>
                         <th class="py-3.5 px-3 text-center cursor-pointer hover:text-white transition-colors select-none" onclick="sortTable('m65')">
-                            65% (1 отм) <span id="sort-m65" class="text-slate-600 ml-0.5">↕</span>
+                            65% <span id="sort-m65" class="text-slate-600 ml-0.5">↕</span>
                         </th>
                         <th class="py-3.5 px-3 text-center cursor-pointer hover:text-white transition-colors select-none" onclick="sortTable('m85')">
-                            85% (2 отм) <span id="sort-m85" class="text-slate-600 ml-0.5">↕</span>
+                            85% <span id="sort-m85" class="text-slate-600 ml-0.5">↕</span>
                         </th>
                         <th class="py-3.5 px-3 text-center cursor-pointer hover:text-white transition-colors select-none text-neonGlow" onclick="sortTable('m95')">
-                            95% (3 отм) <span id="sort-m95" class="text-slate-600 ml-0.5">↕</span>
+                            95% <span id="sort-m95" class="text-slate-600 ml-0.5">↕</span>
                         </th>
-                        <th class="py-3.5 px-3 text-center cursor-pointer hover:text-white transition-colors select-none" onclick="sortTable('m100')">
-                            100% (MAX) <span id="sort-m100" class="text-slate-600 ml-0.5">↕</span>
+                        <th class="py-3.5 px-3 text-center cursor-pointer hover:text-white transition-colors select-none text-cyan-400" onclick="sortTable('m100')">
+                            100% <span id="sort-m100" class="text-slate-600 ml-0.5">↕</span>
                         </th>
                         <th class="py-3.5 px-3 text-center">График</th>
                     </tr>
@@ -198,23 +198,23 @@
                 </div>
             </div>
 
-            <!-- Текущие планки (65% серебро, 85% золото, 95% главный неон, 100% спокойный) -->
+            <!-- Текущие планки (65% серебро, 85% золото, 95% главный неон, 100% алмазный циан) -->
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mb-5 font-mono tabular-nums">
                 <div class="bg-black/25 p-3 rounded-xl border border-white/5 text-center">
-                    <span class="text-[10px] font-sans text-slate-400 block uppercase font-bold tracking-wider">65% (1 отм)</span>
+                    <span class="text-[10px] font-sans text-slate-400 block uppercase font-bold tracking-wider">65%</span>
                     <span id="modalM65" class="text-base font-bold text-slate-300 mt-0.5 block">-</span>
                 </div>
                 <div class="bg-black/25 p-3 rounded-xl border border-white/5 text-center">
-                    <span class="text-[10px] font-sans text-amber-500 block uppercase font-bold tracking-wider">85% (2 отм)</span>
+                    <span class="text-[10px] font-sans text-amber-500 block uppercase font-bold tracking-wider">85%</span>
                     <span id="modalM85" class="text-base font-bold text-amber-400 mt-0.5 block">-</span>
                 </div>
                 <div class="bg-neonViolet/15 p-3 rounded-xl border border-neonViolet/40 text-center">
-                    <span class="text-[10px] font-sans text-neonGlow block uppercase font-bold tracking-wider">95% (3 отм)</span>
+                    <span class="text-[10px] font-sans text-neonGlow block uppercase font-bold tracking-wider">95%</span>
                     <span id="modalM95" class="text-base font-bold text-neonGlow neon-text-shadow mt-0.5 block">-</span>
                 </div>
                 <div class="bg-black/25 p-3 rounded-xl border border-white/5 text-center">
-                    <span class="text-[10px] font-sans text-slate-500 block uppercase font-bold tracking-wider">100% (MAX)</span>
-                    <span id="modalM100" class="text-base font-bold text-slate-400 mt-0.5 block">-</span>
+                    <span class="text-[10px] font-sans text-cyan-500 block uppercase font-bold tracking-wider">100%</span>
+                    <span id="modalM100" class="text-base font-bold text-cyan-400 mt-0.5 block">-</span>
                 </div>
             </div>
 
@@ -374,7 +374,7 @@
                 if (!el) return;
                 if (currentSort.field === field) {
                     el.innerText = currentSort.asc ? '↑' : '↓';
-                    el.className = 'text-neonGlow ml-0.5 font-bold';
+                    el.className = 'text-white ml-0.5 font-bold';
                 } else {
                     el.innerText = '↕';
                     el.className = 'text-slate-600 ml-0.5';
@@ -473,7 +473,7 @@
 
             const romanTiers = ['', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI'];
 
-            // Десктопные строки (65% серебро, 85% золото, 95% главный неон, 100% спокойный)
+            // Десктопные строки (65% серебро, 85% золото, 95% главный неон, 100% циан)
             tbody.innerHTML = filtered.map(t => {
                 const m = t.marks || {};
                 const tierDisplay = romanTiers[t.tier] || t.tier;
@@ -503,7 +503,7 @@
                                 ${formatNum(m['95'])}
                             </span>
                         </td>
-                        <td class="py-2.5 px-3 text-center font-mono tabular-nums text-slate-400 font-medium">${formatNum(m['100'])}</td>
+                        <td class="py-2.5 px-3 text-center font-mono tabular-nums text-cyan-400 font-semibold">${formatNum(m['100'])}</td>
                         <td class="py-2.5 px-3 text-center" onclick="event.stopPropagation(); openTankModal(${t.id})">
                             <button class="px-2.5 py-1.5 rounded-lg bg-white/5 hover:bg-neonViolet text-slate-300 hover:text-white text-xs transition-colors inline-flex items-center gap-1.5">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path></svg>
@@ -514,7 +514,7 @@
                 `;
             }).join('');
 
-            // Мобильные карточки (65% серебро, 85% золото, 95% главный неон, 100% спокойный)
+            // Мобильные карточки (65% серебро, 85% золото, 95% главный неон, 100% циан)
             mobileContainer.innerHTML = filtered.map(t => {
                 const m = t.marks || {};
                 const tierDisplay = romanTiers[t.tier] || t.tier;
@@ -550,8 +550,8 @@
                                 <span class="text-xs font-bold text-neonGlow neon-text-shadow">${formatNum(m['95'])}</span>
                             </div>
                             <div class="bg-black/25 py-1.5 px-1 rounded-lg border border-white/5">
-                                <span class="text-[9px] font-sans text-slate-500 block uppercase font-bold">100%</span>
-                                <span class="text-xs font-bold text-slate-400">${formatNum(m['100'])}</span>
+                                <span class="text-[9px] font-sans text-cyan-500 block uppercase font-bold">100%</span>
+                                <span class="text-xs font-bold text-cyan-400">${formatNum(m['100'])}</span>
                             </div>
                         </div>
                     </div>
@@ -733,7 +733,7 @@
                     labels: labels,
                     datasets: [
                         {
-                            label: '95% (3 отметки)',
+                            label: '95%',
                             data: data95,
                             borderColor: '#C084FC',
                             backgroundColor: 'rgba(192, 132, 252, 0.1)',
@@ -745,14 +745,14 @@
                             fill: true
                         },
                         {
-                            label: '100% (Максимум)',
+                            label: '100%',
                             data: data100,
-                            borderColor: '#64748B',
-                            backgroundColor: 'rgba(100, 116, 139, 0.06)',
+                            borderColor: '#22D3EE',
+                            backgroundColor: 'rgba(34, 211, 238, 0.08)',
                             borderWidth: 2,
                             pointRadius: showPoints,
                             pointHoverRadius: 5,
-                            pointBackgroundColor: '#94A3B8',
+                            pointBackgroundColor: '#22D3EE',
                             tension: 0.3,
                             fill: true
                         }
