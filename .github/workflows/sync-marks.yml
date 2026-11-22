@@ -1,0 +1,48 @@
+name: Sync marks
+
+on:
+  schedule:
+    - cron: '30 1,9 * * *' # 04:30 и 12:30 МСК
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: data-sync
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Validate pipeline
+        run: python -m unittest discover -s tests
+
+      - name: Update marks and history
+        run: python scripts/update.py marks
+
+      - name: Commit data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/latest.json data/meta.json data/history
+          if git diff --staged --quiet; then
+            echo "No data changes"
+            exit 0
+          fi
+          git pull --rebase origin main
+          git commit -m "Auto-update tank marks"
+          git push
