@@ -16,38 +16,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
 
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'system-ui', 'sans-serif'],
-                        mono: ['JetBrains Mono', 'monospace'],
-                    },
-                    colors: {
-                        obsidian: '#0B0B10',
-                        slateCard: '#161522',
-                        neonViolet: '#8B5CF6',
-                        neonGlow: '#C084FC',
-                    }
-                }
-            }
-        }
-    </script>
+    <!-- Собранный Tailwind CSS -->
+    <link rel="stylesheet" href="assets/app.css">
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        body { background-color: #0B0B10; color: #F8FAFC; }
-        .tabular-nums { font-variant-numeric: tabular-nums; }
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: #0B0B10; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #2D2B42; border-radius: 3px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #8B5CF6; }
-        .neon-text-shadow { text-shadow: 0 0 12px rgba(192, 132, 252, 0.45); }
-    </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between selection:bg-neonViolet selection:text-white antialiased">
 
@@ -80,7 +52,7 @@
                 <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                 </span>
-                <input type="text" id="searchInput" placeholder="Поиск по названию или сленгу..." 
+                <input type="text" id="searchInput" placeholder="Поиск по названию..." 
                     class="w-full pl-9 pr-8 py-2 bg-slateCard border border-white/10 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-neonViolet focus:ring-1 focus:ring-neonViolet/50 transition-all">
                 <button id="clearSearchBtn" onclick="clearSearch()" class="hidden absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-white transition-colors">
                     ✕
@@ -92,24 +64,27 @@
     <!-- Основной контент -->
     <main class="max-w-7xl mx-auto px-4 py-5 flex-grow w-full">
         
-        <!-- Компактная панель фильтров -->
-        <div class="bg-slateCard border border-white/5 rounded-2xl p-4 mb-5 shadow-xl space-y-3.5">
-            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                <!-- Уровни техники -->
-                <div>
-                    <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mb-1.5">Уровень техники</span>
-                    <div class="flex flex-wrap gap-1.5" id="tierFilters">
-                        <button data-tier="all" class="tier-btn px-3 py-1.5 rounded-lg text-xs font-medium transition-all">Все</button>
-                        <button data-tier="5" class="tier-btn px-3 py-1.5 rounded-lg text-xs font-medium font-mono transition-all">V</button>
-                        <button data-tier="6" class="tier-btn px-3 py-1.5 rounded-lg text-xs font-medium font-mono transition-all">VI</button>
-                        <button data-tier="7" class="tier-btn px-3 py-1.5 rounded-lg text-xs font-medium font-mono transition-all">VII</button>
-                        <button data-tier="8" class="tier-btn px-3 py-1.5 rounded-lg text-xs font-medium font-mono transition-all">VIII</button>
-                        <button data-tier="9" class="tier-btn px-3 py-1.5 rounded-lg text-xs font-medium font-mono transition-all">IX</button>
-                        <button data-tier="10" class="tier-btn px-3 py-1.5 rounded-lg text-xs font-medium font-mono transition-all">X</button>
-                        <button data-tier="11" class="tier-btn px-3 py-1.5 rounded-lg text-xs font-medium font-mono transition-all">XI</button>
-                    </div>
+        <!-- Панель фильтров -->
+        <div class="bg-slateCard border border-white/5 rounded-2xl p-4 mb-5 shadow-xl space-y-4">
+            <!-- Уровни техники (мультиселект) -->
+            <div>
+                <div class="flex items-baseline justify-between gap-3 mb-1.5">
+                    <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Уровень техники</span>
+                    <span class="text-[10px] text-slate-500">можно выбрать несколько</span>
                 </div>
+                <div class="flex flex-wrap gap-1.5" id="tierFilters">
+                    <button data-tier="all" class="tier-btn px-3 py-1.5 rounded-lg text-xs font-medium transition-all">Все</button>
+                    <button data-tier="5" class="tier-btn px-3 py-1.5 rounded-lg text-xs font-medium font-mono transition-all">V</button>
+                    <button data-tier="6" class="tier-btn px-3 py-1.5 rounded-lg text-xs font-medium font-mono transition-all">VI</button>
+                    <button data-tier="7" class="tier-btn px-3 py-1.5 rounded-lg text-xs font-medium font-mono transition-all">VII</button>
+                    <button data-tier="8" class="tier-btn px-3 py-1.5 rounded-lg text-xs font-medium font-mono transition-all">VIII</button>
+                    <button data-tier="9" class="tier-btn px-3 py-1.5 rounded-lg text-xs font-medium font-mono transition-all">IX</button>
+                    <button data-tier="10" class="tier-btn px-3 py-1.5 rounded-lg text-xs font-medium font-mono transition-all">X</button>
+                    <button data-tier="11" class="tier-btn px-3 py-1.5 rounded-lg text-xs font-medium font-mono transition-all">XI</button>
+                </div>
+            </div>
 
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                 <!-- Классы техники -->
                 <div>
                     <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mb-1.5">Класс техники</span>
@@ -132,12 +107,27 @@
                         <button data-type="prem" class="type-btn px-3 py-1.5 rounded-lg text-xs font-medium transition-all">Премиум / Акционные</button>
                     </div>
                 </div>
+
+                <!-- Нация -->
+                <div class="relative" id="nationDropdown">
+                    <span id="nationFilterTitle" class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mb-1.5">Нация</span>
+                    <button type="button" id="nationFilterBtn" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="nationFilterTitle"
+                        class="w-full flex items-center justify-between gap-2 px-3 py-2 bg-black/25 border border-white/10 rounded-lg text-xs text-slate-200 hover:border-white/20 focus:outline-none focus:border-neonViolet focus:ring-1 focus:ring-neonViolet/40 transition-colors cursor-pointer">
+                        <span id="nationFilterLabel">Все нации</span>
+                        <svg id="nationFilterChevron" class="w-3.5 h-3.5 shrink-0 text-slate-400 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div id="nationFilterMenu" role="listbox" aria-labelledby="nationFilterTitle"
+                        class="hidden absolute z-50 left-0 right-0 mt-1.5 max-h-64 overflow-y-auto custom-scrollbar bg-slateCard border border-white/10 rounded-xl shadow-2xl shadow-black/50 p-1">
+                    </div>
+                </div>
             </div>
 
             <!-- Индикатор количества и быстрый сброс -->
-            <div class="pt-2.5 border-t border-white/5 flex items-center justify-between text-xs text-slate-400">
+            <div class="pt-2.5 border-t border-white/5 flex items-center justify-between gap-3 text-xs text-slate-400">
                 <span id="resultsCounter">Загрузка списка...</span>
-                <button id="resetFiltersBtn" onclick="resetAllFilters()" class="hidden text-neonGlow hover:text-white font-medium flex items-center gap-1 transition-colors">
+                <button id="resetFiltersBtn" onclick="resetAllFilters()" class="hidden text-neonGlow hover:text-white font-medium flex items-center gap-1 transition-colors shrink-0">
                     <span>✕ Сбросить фильтры</span>
                 </button>
             </div>
@@ -243,13 +233,40 @@
         </div>
     </footer>
 
+    <!-- Сюда один раз инъектируется спрайт иконок -->
+    <div id="iconsSpriteHost" style="display:none" aria-hidden="true"></div>
+
     <!-- Скрипты интерфейса -->
     <script>
         let allTanks = [];
-        let currentTier = localStorage.getItem('tm_tier') || 'all';
+
+        // Уровни — мультиселект. Пустой массив означает «все уровни».
+        let currentTiers = [];
+        const storedTiers = localStorage.getItem('tm_tiers');
+        if (storedTiers) {
+            try {
+                const parsed = JSON.parse(storedTiers);
+                if (Array.isArray(parsed)) currentTiers = parsed.map(String);
+            } catch (e) {
+                currentTiers = [];
+            }
+        } else {
+            // Миграция со старого одиночного фильтра
+            const legacyTier = localStorage.getItem('tm_tier');
+            if (legacyTier && legacyTier !== 'all') currentTiers = [String(legacyTier)];
+        }
+
         let currentClass = localStorage.getItem('tm_class') || 'all';
         let currentType = localStorage.getItem('tm_type') || 'all';
-        let currentSort = JSON.parse(localStorage.getItem('tm_sort') || '{"field":"tier","asc":false}');
+        let currentNation = localStorage.getItem('tm_nation') || 'all';
+
+        let currentSort = { field: 'tier', asc: false };
+        try {
+            const parsedSort = JSON.parse(localStorage.getItem('tm_sort') || 'null');
+            if (parsedSort && typeof parsedSort.field === 'string') currentSort = parsedSort;
+        } catch (e) {}
+
+        let searchUrlTimer = null;
         
         let activeTankId = null;
         let activeTankHistory = [];
@@ -262,32 +279,414 @@
             'usa': 'США',
             'china': 'КИТАЙ',
             'france': 'ФРАНЦИЯ',
-            'uk': 'БРИТАНИЯ',
+            'uk': 'ВЕЛИКОБРИТАНИЯ',
             'japan': 'ЯПОНИЯ',
             'czech': 'ЧЕХИЯ',
             'sweden': 'ШВЕЦИЯ',
             'poland': 'ПОЛЬША',
             'italy': 'ИТАЛИЯ',
-            'intunion': 'СОЮЗ'
+            'intunion': 'СБОРНАЯ НАЦИЯ'
         };
 
-        const slangMap = {
-            'конь': 'super conqueror',
-            'бабаха': 'fv4005',
-            'огурец': '279',
-            'дед': 'ис-7',
-            'гриль': 'grille',
-            'бурасик': 'bourrasque',
-            'ебр': 'ebr',
-            'лео': 'leopard',
-            'чиф': 'chieftain',
-            'прога': 'progetto',
-            'рога': 'progetto',
-            'вазик': 'wz-',
-            'объект': 'об.',
-            'мантикора': 'manticore',
-            'яга': 'jagdpanzer'
+        const nationSelectNames = {
+            'ussr': 'СССР',
+            'germany': 'Германия',
+            'usa': 'США',
+            'france': 'Франция',
+            'uk': 'Великобритания',
+            'china': 'Китай',
+            'japan': 'Япония',
+            'czech': 'Чехия',
+            'sweden': 'Швеция',
+            'poland': 'Польша',
+            'italy': 'Италия',
+            'intunion': 'Сборная нация'
         };
+
+        // Подписи боевых ролей Lesta для карточки танка
+        const roleLabels = {
+            'role_LT_universal': 'Универсал',
+            'role_LT_wheeled': 'Колёсный',
+            'role_MT_universal': 'Универсал',
+            'role_MT_sniper': 'Снайпер',
+            'role_MT_support': 'Поддержка',
+            'role_MT_assault': 'Штурм',
+            'role_HT_universal': 'Универсал',
+            'role_HT_break': 'Прорыв',
+            'role_HT_assault': 'Штурм',
+            'role_HT_support': 'Поддержка',
+            'role_ATSPG_universal': 'Универсал',
+            'role_ATSPG_sniper': 'Снайпер',
+            'role_ATSPG_assault': 'Штурм',
+            'role_ATSPG_support': 'Поддержка',
+            'role_SPG': 'Классическая',
+            'role_SPG_assault': 'Штурмовая',
+            'role_SPG_flame': 'Огнемётная'
+        };
+
+        const VALID_CLASSES = ['heavyTank', 'mediumTank', 'lightTank', 'AT-SPG', 'SPG'];
+        const VALID_TYPES = ['tech', 'prem'];
+        const VALID_TIERS = ['5', '6', '7', '8', '9', '10', '11'];
+        const VALID_SORT_FIELDS = ['name', 'tier', 'm65', 'm85', 'm95', 'm100'];
+        const URL_FILTER_KEYS = ['tier', 'class', 'type', 'nation', 'q', 'sort'];
+
+        function readUrlState(useCurrent = true) {
+            const params = new URLSearchParams(location.search);
+            if (!URL_FILTER_KEYS.some(key => params.has(key))) return null;
+
+            // При загрузке страницы часть фильтров может прийти из localStorage.
+            // При popstate URL — единственный источник истины.
+            const baseTiers = useCurrent ? [...currentTiers] : [];
+            const baseClass = useCurrent ? currentClass : 'all';
+            const baseType = useCurrent ? currentType : 'all';
+            const baseNation = useCurrent ? currentNation : 'all';
+            const baseQuery = useCurrent ? document.getElementById('searchInput').value : '';
+            const baseSort = useCurrent ? { ...currentSort } : { field: 'tier', asc: false };
+
+            const tiersParam = params.get('tier');
+            const tiers = tiersParam === null
+                ? baseTiers
+                : [...new Set(tiersParam.split(',').map(v => v.trim()).filter(v => VALID_TIERS.includes(v)))];
+
+            const nation = params.get('nation');
+            const tankClass = params.get('class');
+            const type = params.get('type');
+            const sortRaw = params.get('sort');
+            let sort = baseSort;
+
+            if (sortRaw) {
+                const [field, dir] = sortRaw.split('.');
+                if (VALID_SORT_FIELDS.includes(field) && (dir === 'asc' || dir === 'desc')) {
+                    sort = { field, asc: dir === 'asc' };
+                }
+            }
+
+            return {
+                tiers,
+                tankClass: tankClass === null ? baseClass : (VALID_CLASSES.includes(tankClass) ? tankClass : 'all'),
+                type: type === null ? baseType : (VALID_TYPES.includes(type) ? type : 'all'),
+                nation: nation === null
+                    ? baseNation
+                    : (Object.prototype.hasOwnProperty.call(nationSelectNames, nation) ? nation : 'all'),
+                q: params.has('q') ? params.get('q').slice(0, 100) : baseQuery,
+                sort,
+            };
+        }
+
+        function stateToParams() {
+            const params = new URLSearchParams(location.search);
+            URL_FILTER_KEYS.forEach(key => params.delete(key));
+
+            if (currentTiers.length) params.set('tier', currentTiers.join(','));
+            if (currentClass !== 'all') params.set('class', currentClass);
+            if (currentType !== 'all') params.set('type', currentType);
+            if (currentNation !== 'all') params.set('nation', currentNation);
+
+            const query = document.getElementById('searchInput').value.trim();
+            if (query) params.set('q', query);
+
+            if (currentSort.field !== 'tier' || currentSort.asc !== false) {
+                params.set('sort', `${currentSort.field}.${currentSort.asc ? 'asc' : 'desc'}`);
+            }
+            return params;
+        }
+
+        function updateUrl(mode = 'replace') {
+            const query = stateToParams().toString();
+            const url = location.pathname + (query ? '?' + query : '') + location.hash;
+            if (mode === 'push') {
+                history.pushState({}, '', url);
+            } else {
+                history.replaceState({}, '', url);
+            }
+        }
+
+        function persistState() {
+            localStorage.setItem('tm_tiers', JSON.stringify(currentTiers));
+            localStorage.removeItem('tm_tier');
+            localStorage.removeItem('tm_role');
+            localStorage.setItem('tm_class', currentClass);
+            localStorage.setItem('tm_type', currentType);
+            localStorage.setItem('tm_nation', currentNation);
+            localStorage.setItem('tm_sort', JSON.stringify(currentSort));
+        }
+
+        function applyFiltersChange(mode = 'push') {
+            persistState();
+            updateUrl(mode);
+            syncFilterButtonsUI();
+            renderTable();
+        }
+
+        function applyUrlState() {
+            clearTimeout(searchUrlTimer);
+            const state = readUrlState(false);
+
+            if (state) {
+                currentTiers = state.tiers;
+                currentClass = state.tankClass;
+                currentType = state.type;
+                currentNation = state.nation;
+                currentSort = state.sort;
+                document.getElementById('searchInput').value = state.q;
+            } else {
+                currentTiers = [];
+                currentClass = 'all';
+                currentType = 'all';
+                currentNation = 'all';
+                currentSort = { field: 'tier', asc: false };
+                document.getElementById('searchInput').value = '';
+            }
+
+            persistState();
+            syncFilterButtonsUI();
+            renderTable();
+        }
+
+        function initUrlState() {
+            const state = readUrlState();
+            if (state) {
+                currentTiers = state.tiers;
+                currentClass = state.tankClass;
+                currentType = state.type;
+                currentNation = state.nation;
+                currentSort = state.sort;
+                document.getElementById('searchInput').value = state.q;
+            }
+            updateUrl('replace');
+            window.addEventListener('popstate', applyUrlState);
+        }
+
+        // Раскладки: физические клавиши QWERTY <-> ЙЦУКЕН
+        const LAYOUT_EN = "`qwertyuiop[]asdfghjkl;'zxcvbnm,./";
+        const LAYOUT_RU = "ёйцукенгшщзхъфывапролджэячсмитьбю.,";
+
+        const TRANSLIT_MAP = {
+            'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd', 'е': 'e',
+            'ж': 'zh', 'з': 'z', 'и': 'i', 'й': 'y', 'к': 'k', 'л': 'l',
+            'м': 'm', 'н': 'n', 'о': 'o', 'п': 'p', 'р': 'r', 'с': 's',
+            'т': 't', 'у': 'u', 'ф': 'f', 'х': 'h', 'ц': 'c', 'ч': 'ch',
+            'ш': 'sh', 'щ': 'sch', 'ъ': '', 'ы': 'y', 'ь': '', 'э': 'e',
+            'ю': 'yu', 'я': 'ya'
+        };
+
+        const REVERSE_TRANSLIT = [
+            ['sch', 'щ'], ['sh', 'ш'], ['ch', 'ч'], ['zh', 'ж'],
+            ['yu', 'ю'], ['ya', 'я'], ['kh', 'х'], ['ts', 'ц'],
+            ['a', 'а'], ['b', 'б'], ['v', 'в'], ['g', 'г'], ['d', 'д'],
+            ['e', 'е'], ['z', 'з'], ['i', 'и'], ['y', 'й'], ['k', 'к'],
+            ['l', 'л'], ['m', 'м'], ['n', 'н'], ['o', 'о'], ['p', 'п'],
+            ['r', 'р'], ['s', 'с'], ['t', 'т'], ['u', 'у'], ['f', 'ф'],
+            ['h', 'х'], ['c', 'ц'], ['j', 'й'], ['w', 'в'], ['x', 'кс']
+        ];
+
+        // Народные названия техники. Ключ — что вводит игрок, значение — фрагмент
+        // названия/тега в базе. Новые алиасы добавлять сюда; нормализация и
+        // транслитерация применяются автоматически.
+        const SLANG_MAP = {
+            // Британцы
+            'конь': ['super conqueror'],
+            'конек': ['super conqueror'],
+            'конька': ['super conqueror'],
+            'бабаха': ['fv4005'],
+            'бабка': ['fv4005'],
+            'гриль': ['grille'],
+            'грилка': ['grille'],
+            'гриля': ['grille'],
+            'бурасик': ['bourrasque'],
+            'бура': ['bourrasque'],
+            'ебр': ['ebr'],
+            'ебэр': ['ebr'],
+            'эбр': ['ebr'],
+            'лео': ['leopard'],
+            'леопард': ['leopard'],
+            'чиф': ['chieftain'],
+            'чифтан': ['chieftain'],
+            'чафти': ['chieftain'],
+            'мантикора': ['manticore'],
+            'манти': ['manticore'],
+            'цент': ['centurion'],
+            'центурион': ['centurion'],
+
+            // СССР
+            'огурец': ['279'],
+            'огур': ['279'],
+            'дед': ['ис-7'],
+            'дедушка': ['ис-7'],
+            'ися': ['ис-', 'is-'],
+            'иски': ['ис-'],
+            'объект': ['объект'],
+
+            // Германия
+            'мышь': ['maus'],
+            'мышка': ['maus'],
+            'крыса': ['maus'],
+            'тигр': ['tiger'],
+            'тигра': ['tiger'],
+            'королева': ['tiger ii'],
+            'король': ['tiger ii'],
+            'пантера': ['panther'],
+            'пантер': ['panther'],
+            'фердинанд': ['ferdinand'],
+            'ферди': ['ferdinand'],
+            'нашорн': ['nashorn'],
+            'носорог': ['nashorn'],
+            'яга': ['jagdpanzer'],
+            'ягд': ['jagdpanzer'],
+            'ягдтигр': ['jagdtiger'],
+
+            // США, Италия, Польша, Китай
+            'шерман': ['sherman'],
+            'першинг': ['pershing'],
+            'паттон': ['patton'],
+            'калибан': ['caliban'],
+            'прога': ['progetto'],
+            'рога': ['progetto'],
+            'вазик': ['wz-'],
+            'вазя': ['wz-']
+        };
+
+        let searchIndex = [];
+        let searchById = new Map();
+
+        function normalizeText(value) {
+            let text = String(value ?? '').toLowerCase();
+            text = text.replace(/ё/g, 'е');
+            text = text.replace(/[’‘`]/g, "'").replace(/[–—−]/g, '-');
+            text = text.replace(/[^a-z0-9а-я'\-. ]/gi, ' ');
+            return text.replace(/\s+/g, ' ').trim();
+        }
+
+        function compactText(text) {
+            return String(text ?? '').replace(/[^a-z0-9а-я]/gi, '');
+        }
+
+        function convertLayout(text, from, to) {
+            let result = '';
+            for (const char of text) {
+                const index = from.indexOf(char);
+                result += index === -1 ? char : to[index];
+            }
+            return result;
+        }
+
+        function transliterate(text) {
+            return [...text].map(char => TRANSLIT_MAP[char] ?? char).join('');
+        }
+
+        function reverseTransliterate(text) {
+            let result = '';
+            let index = 0;
+            while (index < text.length) {
+                let matched = false;
+                for (const [latin, cyrillic] of REVERSE_TRANSLIT) {
+                    if (text.startsWith(latin, index)) {
+                        result += cyrillic;
+                        index += latin.length;
+                        matched = true;
+                        break;
+                    }
+                }
+                if (!matched) {
+                    result += text[index];
+                    index += 1;
+                }
+            }
+            return result;
+        }
+
+        const SLANG_INDEX = Object.fromEntries(
+            Object.entries(SLANG_MAP).map(([alias, targets]) => [normalizeText(alias), targets])
+        );
+
+        function buildSearchEntry(tank) {
+            const base = [tank.name, tank.short_name, tank.tag].filter(Boolean).map(normalizeText);
+            const strings = new Set();
+
+            const add = (value) => {
+                if (!value) return;
+                strings.add(value);
+                const compact = compactText(value);
+                if (compact) strings.add(compact);
+            };
+
+            base.forEach(add);
+            base.forEach(value => {
+                add(transliterate(value));
+                add(reverseTransliterate(value));
+                add(convertLayout(value, LAYOUT_RU, LAYOUT_EN));
+                add(convertLayout(value, LAYOUT_EN, LAYOUT_RU));
+            });
+
+            return { tank, id: String(tank.id ?? ''), strings: [...strings] };
+        }
+
+        function buildSearchIndex() {
+            searchIndex = allTanks.map(buildSearchEntry);
+            searchById = new Map(searchIndex.map(entry => [entry.tank.id, entry]));
+        }
+
+        function buildQueryVariants(raw) {
+            const base = normalizeText(raw);
+            if (!base) return [];
+
+            const variants = new Set();
+            const push = (value, keep) => {
+                if (!value) return;
+                if (keep(value)) variants.add(value);
+                const compact = compactText(value);
+                if (compact && keep(compact)) variants.add(compact);
+            };
+            const add = value => push(value, () => true);
+            // Короткие варианты вроде "kon" от "конь" или "is" от "ис-" дают ложные совпадения
+            const addDerived = value => push(value, v => v.length >= 4 || /\d/.test(v));
+            const addSlang = value => push(value, v => v.length >= 3 || /\d/.test(v));
+
+            add(base);
+            const targets = SLANG_INDEX[base] || [];
+            targets.forEach(target => {
+                const normalized = normalizeText(target);
+                addSlang(normalized);
+                addDerived(transliterate(normalized));
+                addDerived(reverseTransliterate(normalized));
+                addDerived(convertLayout(normalized, LAYOUT_EN, LAYOUT_RU));
+                addDerived(convertLayout(normalized, LAYOUT_RU, LAYOUT_EN));
+            });
+
+            addDerived(transliterate(base));
+            addDerived(reverseTransliterate(base));
+            addDerived(convertLayout(base, LAYOUT_EN, LAYOUT_RU));
+            addDerived(convertLayout(base, LAYOUT_RU, LAYOUT_EN));
+
+            return [...variants].filter(Boolean).sort((a, b) => b.length - a.length);
+        }
+
+        function matchesSearch(entry, variants) {
+            // id требует точного совпадения, чтобы "279" не находил танк с id 27905
+            if (entry.id && variants.includes(entry.id)) return true;
+            return variants.some(variant => entry.strings.some(value => value.includes(variant)));
+        }
+
+        // Иконки танков берутся из одного локального спрайта (один запрос вместо 787)
+        function iconSymbolId(tag) {
+            return 'i_' + String(tag || '').replace(/[^A-Za-z0-9_-]/g, '_');
+        }
+
+        function getTankIconSvg(tag) {
+            if (!tag) return '';
+            return `<svg class="w-14 h-8 shrink-0 opacity-85 group-hover:opacity-100 transition-opacity pointer-events-none" aria-hidden="true"><use href="#${iconSymbolId(tag)}" width="56" height="32"></use></svg>`;
+        }
+
+        // Один запрос на все иконки; после инъекции существующие <use> разрешаются сами
+        async function loadIconsSprite() {
+            try {
+                const response = await fetch('assets/icons.svg', { cache: 'no-cache' });
+                if (!response.ok) return;
+                document.getElementById('iconsSpriteHost').innerHTML = await response.text();
+            } catch (e) {
+                console.warn('Не удалось загрузить спрайт иконок', e);
+            }
+        }
 
         // Векторные иконки классов из клиента игры (белый для прокачиваемых, золотой для премов)
         function getClassSvg(type, isPremium = false) {
@@ -325,6 +724,13 @@
             }
         }
 
+        // Экранирование данных из внешнего API перед вставкой в innerHTML
+        function escapeHtml(value) {
+            return String(value ?? '').replace(/[&<>"']/g, ch => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            }[ch]));
+        }
+
         // Форматирование чисел с пробелом тысячи (4 850)
         function formatNum(num) {
             if (!num) return '-';
@@ -348,14 +754,56 @@
             tbody.innerHTML = skeletonRows;
         }
 
+        function setNationMenuOpen(open) {
+            const menu = document.getElementById('nationFilterMenu');
+            const btn = document.getElementById('nationFilterBtn');
+            const chevron = document.getElementById('nationFilterChevron');
+            if (!menu || !btn) return;
+            menu.classList.toggle('hidden', !open);
+            btn.setAttribute('aria-expanded', String(open));
+            if (chevron) chevron.classList.toggle('rotate-180', open);
+        }
+
+        // Кастомный dropdown нации в палитре сайта
+        function syncNationDropdown() {
+            const label = document.getElementById('nationFilterLabel');
+            if (label) label.textContent = currentNation === 'all' ? 'Все нации' : (nationSelectNames[currentNation] || 'Все нации');
+
+            const menu = document.getElementById('nationFilterMenu');
+            if (!menu) return;
+
+            const presentNations = new Set(allTanks.map(t => t.nation).filter(Boolean));
+            const options = [['all', 'Все нации']].concat(
+                Object.keys(nationSelectNames)
+                    .filter(code => presentNations.has(code))
+                    .map(code => [code, nationSelectNames[code]])
+            );
+
+            menu.innerHTML = options.map(([code, name]) => {
+                const active = code === currentNation;
+                return `<button type="button" role="option" aria-selected="${active}" data-nation="${code}" class="w-full flex items-center justify-between gap-2 px-2.5 py-2 rounded-lg text-xs text-left transition-colors ${active ? 'bg-neonViolet/20 text-neonGlow' : 'text-slate-300 hover:bg-white/5 hover:text-white'}">
+                    <span>${name}</span>
+                    <svg class="w-3.5 h-3.5 shrink-0 ${active ? '' : 'invisible'}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                </button>`;
+            }).join('');
+        }
+
         // Подсветка активных кнопок фильтров
         function syncFilterButtonsUI() {
             const activeClasses = ['bg-neonViolet', 'text-white', 'shadow-sm', 'shadow-neonViolet/40', 'border', 'border-neonViolet/50'];
             const inactiveClasses = ['bg-white/5', 'text-slate-300', 'hover:bg-white/10', 'border', 'border-transparent'];
+            const elevenIdleClasses = ['text-amber-300', 'ring-1', 'ring-amber-400/30'];
 
             document.querySelectorAll('.tier-btn').forEach(btn => {
-                btn.classList.remove(...activeClasses, ...inactiveClasses);
-                btn.classList.add(...(btn.dataset.tier === String(currentTier) ? activeClasses : inactiveClasses));
+                const tier = btn.dataset.tier;
+                const isActive = tier === 'all' ? currentTiers.length === 0 : currentTiers.includes(tier);
+                btn.classList.remove(...activeClasses, ...inactiveClasses, ...elevenIdleClasses);
+                if (isActive) {
+                    btn.classList.add(...activeClasses);
+                } else {
+                    btn.classList.add(...inactiveClasses);
+                    if (tier === '11') btn.classList.add(...elevenIdleClasses);
+                }
             });
 
             document.querySelectorAll('.class-btn').forEach(btn => {
@@ -367,6 +815,9 @@
                 btn.classList.remove(...activeClasses, ...inactiveClasses);
                 btn.classList.add(...(btn.dataset.type === currentType ? activeClasses : inactiveClasses));
             });
+
+            // Синхронизация кастомного dropdown нации
+            syncNationDropdown();
 
             // Стрелки сортировки в шапке таблицы
             ['name', 'tier', 'm65', 'm85', 'm95', 'm100'].forEach(field => {
@@ -382,16 +833,29 @@
             });
         }
 
+        // Заполнение фильтров только теми значениями, которые есть в данных
+        function populateFilterOptions() {
+            const presentNations = new Set(allTanks.map(t => t.nation).filter(Boolean));
+
+            // Сбрасываем сохранённое значение, если такой нации больше нет
+            if (currentNation !== 'all' && !presentNations.has(currentNation)) currentNation = 'all';
+
+            syncFilterButtonsUI();
+        }
+
         // Загрузка данных
         async function loadData() {
             showSkeleton();
             syncFilterButtonsUI();
             try {
-                const response = await fetch('./data/latest.json?v=' + Date.now(), { cache: 'no-store' });
+                const response = await fetch('./data/latest.json', { cache: 'no-cache' });
                 if (!response.ok) throw new Error('Файл latest.json не найден');
                 const data = await response.json();
                 
                 allTanks = data.vehicles || [];
+                buildSearchIndex();
+                populateFilterOptions();
+                updateUrl('replace');
                 
                 if (data.updated_at) {
                     const date = new Date(data.updated_at);
@@ -416,26 +880,24 @@
             document.getElementById('clearSearchBtn').classList.toggle('hidden', !searchVal);
 
             // Показываем/скрываем кнопку сброса всех фильтров
-            const isDefaultFilters = currentTier === 'all' && currentClass === 'all' && currentType === 'all' && !searchVal;
+            const isDefaultFilters = currentTiers.length === 0 && currentClass === 'all' && currentType === 'all' &&
+                currentNation === 'all' && !searchVal;
             document.getElementById('resetFiltersBtn').classList.toggle('hidden', isDefaultFilters);
 
-            let query = searchVal;
-            if (slangMap[searchVal]) {
-                query = slangMap[searchVal];
-            }
+            const queryVariants = buildQueryVariants(searchVal);
 
             const filtered = allTanks.filter(t => {
-                if (currentTier !== 'all' && String(t.tier) !== String(currentTier)) return false;
+                if (currentTiers.length > 0 && !currentTiers.includes(String(t.tier))) return false;
                 if (currentClass !== 'all' && t.type !== currentClass) return false;
+                if (currentNation !== 'all' && t.nation !== currentNation) return false;
                 
                 const isPremOrSpecial = Boolean(t.is_premium || t.is_special);
                 if (currentType === 'tech' && isPremOrSpecial) return false;
                 if (currentType === 'prem' && !isPremOrSpecial) return false;
 
-                if (query) {
-                    const nameRu = (t.name || '').toLowerCase();
-                    const shortName = (t.short_name || '').toLowerCase();
-                    if (!nameRu.includes(query) && !shortName.includes(query)) return false;
+                if (queryVariants.length) {
+                    const entry = searchById.get(t.id);
+                    if (!entry || !matchesSearch(entry, queryVariants)) return false;
                 }
                 return true;
             });
@@ -479,7 +941,6 @@
                 const tierDisplay = romanTiers[t.tier] || t.tier;
                 const isPrem = Boolean(t.is_premium || t.is_special);
                 const nationLabel = nationNames[t.nation] || (t.nation ? t.nation.toUpperCase() : '');
-                const iconUrl = t.tag ? `https://cdn.poliroid.me/icons/tanks_svg/ru/${t.tag}.svg` : '';
 
                 return `
                     <tr onclick="openTankModal(${t.id})" class="hover:bg-white/[0.04] cursor-pointer transition-colors group">
@@ -488,9 +949,9 @@
                                 <div class="w-5 h-5 flex items-center justify-center shrink-0">
                                     ${getClassSvg(t.type, isPrem)}
                                 </div>
-                                ${iconUrl ? `<img src="${iconUrl}" alt="" loading="lazy" onerror="this.style.display='none'" class="w-14 h-8 object-contain opacity-85 group-hover:opacity-100 transition-opacity shrink-0 pointer-events-none">` : ''}
+                                ${getTankIconSvg(t.tag)}
                                 <div>
-                                    <div class="font-medium text-white group-hover:text-neonGlow transition-colors leading-snug">${t.name}</div>
+                                    <div class="font-medium text-white group-hover:text-neonGlow transition-colors leading-snug">${escapeHtml(t.name)}</div>
                                     ${nationLabel ? `<span class="text-[10px] font-semibold tracking-wider text-slate-500 uppercase">${nationLabel}</span>` : ''}
                                 </div>
                             </div>
@@ -527,7 +988,7 @@
                             <div class="flex items-center gap-2.5">
                                 ${getClassSvg(t.type, isPrem)}
                                 <div>
-                                    <div class="font-bold text-white text-sm leading-tight">${t.name}</div>
+                                    <div class="font-bold text-white text-sm leading-tight">${escapeHtml(t.name)}</div>
                                     <div class="text-[10px] text-slate-400 mt-0.5">${tierDisplay} ур. ${nationLabel ? '• ' + nationLabel : ''}</div>
                                 </div>
                             </div>
@@ -566,60 +1027,113 @@
                 currentSort.field = field;
                 currentSort.asc = field === 'name';
             }
-            localStorage.setItem('tm_sort', JSON.stringify(currentSort));
-            syncFilterButtonsUI();
-            renderTable();
+            applyFiltersChange('push');
         }
 
         function clearSearch() {
             const input = document.getElementById('searchInput');
             input.value = '';
             input.focus();
-            renderTable();
+            applyFiltersChange('replace');
         }
 
         function resetAllFilters() {
-            currentTier = 'all';
+            currentTiers = [];
             currentClass = 'all';
             currentType = 'all';
-            localStorage.setItem('tm_tier', 'all');
-            localStorage.setItem('tm_class', 'all');
-            localStorage.setItem('tm_type', 'all');
+            currentNation = 'all';
+            currentSort = { field: 'tier', asc: false };
             document.getElementById('searchInput').value = '';
-            syncFilterButtonsUI();
-            renderTable();
+            applyFiltersChange('push');
         }
 
         // Обработчики кнопок фильтров
         document.querySelectorAll('.tier-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
-                currentTier = e.currentTarget.dataset.tier;
-                localStorage.setItem('tm_tier', currentTier);
-                syncFilterButtonsUI();
-                renderTable();
+                const tier = e.currentTarget.dataset.tier;
+                if (tier === 'all') {
+                    currentTiers = [];
+                } else if (currentTiers.includes(tier)) {
+                    currentTiers = currentTiers.filter(t => t !== tier);
+                } else {
+                    currentTiers = [...currentTiers, tier];
+                }
+                applyFiltersChange('push');
             });
         });
 
         document.querySelectorAll('.class-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 currentClass = e.currentTarget.dataset.class;
-                localStorage.setItem('tm_class', currentClass);
-                syncFilterButtonsUI();
-                renderTable();
+                applyFiltersChange('push');
             });
         });
 
         document.querySelectorAll('.type-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 currentType = e.currentTarget.dataset.type;
-                localStorage.setItem('tm_type', currentType);
-                syncFilterButtonsUI();
-                renderTable();
+                applyFiltersChange('push');
             });
+        });
+
+        // Кастомный dropdown нации
+        document.getElementById('nationFilterBtn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isOpen = e.currentTarget.getAttribute('aria-expanded') === 'true';
+            setNationMenuOpen(!isOpen);
+        });
+
+        document.getElementById('nationFilterBtn').addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                setNationMenuOpen(true);
+                const first = document.querySelector('#nationFilterMenu [data-nation]');
+                if (first) first.focus();
+            }
+        });
+
+        document.getElementById('nationFilterMenu').addEventListener('click', (e) => {
+            const option = e.target.closest('[data-nation]');
+            if (!option) return;
+            currentNation = option.dataset.nation;
+            setNationMenuOpen(false);
+            document.getElementById('nationFilterBtn').focus();
+            applyFiltersChange('push');
+        });
+
+        document.getElementById('nationFilterMenu').addEventListener('keydown', (e) => {
+            const options = [...document.querySelectorAll('#nationFilterMenu [data-nation]')];
+            const index = options.indexOf(document.activeElement);
+
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                options[Math.min(index + 1, options.length - 1)]?.focus();
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                options[Math.max(index - 1, 0)]?.focus();
+            } else if (e.key === 'Home') {
+                e.preventDefault();
+                options[0]?.focus();
+            } else if (e.key === 'End') {
+                e.preventDefault();
+                options[options.length - 1]?.focus();
+            } else if (e.key === 'Escape') {
+                setNationMenuOpen(false);
+                document.getElementById('nationFilterBtn').focus();
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('#nationDropdown')) setNationMenuOpen(false);
         });
 
         document.getElementById('searchInput').addEventListener('input', () => {
             renderTable();
+            clearTimeout(searchUrlTimer);
+            searchUrlTimer = setTimeout(() => {
+                persistState();
+                updateUrl('replace');
+            }, 300);
         });
 
         // Модальное окно и история
@@ -639,9 +1153,10 @@
 
             const isPrem = Boolean(tank.is_premium || tank.is_special);
             const nationLabel = nationNames[tank.nation] || (tank.nation ? tank.nation.toUpperCase() : '');
+            const roleLabel = roleLabels[tank.role] || '';
 
             document.getElementById('modalTankName').innerText = tank.name;
-            document.getElementById('modalTankSub').innerText = `${romanTiers[tank.tier] || tank.tier} уровень • ${classNames[tank.type] || tank.type}${nationLabel ? ' • ' + nationLabel : ''}`;
+            document.getElementById('modalTankSub').innerText = `${romanTiers[tank.tier] || tank.tier} уровень • ${classNames[tank.type] || tank.type}${nationLabel ? ' • ' + nationLabel : ''}${roleLabel ? ' • ' + roleLabel : ''}`;
             document.getElementById('modalClassIcon').innerHTML = getClassSvg(tank.type, isPrem);
 
             const m = tank.marks || {};
@@ -666,7 +1181,7 @@
         async function loadTankHistory(tankId, currentMarks) {
             let history = [];
             try {
-                const res = await fetch(`./data/history/${tankId}.json?v=` + Date.now(), { cache: 'no-store' });
+                const res = await fetch(`./data/history/${tankId}.json`, { cache: 'no-cache' });
                 if (res.ok) {
                     history = await res.json();
                 }
@@ -799,9 +1314,14 @@
         });
 
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') closeModal();
+            if (e.key === 'Escape') {
+                setNationMenuOpen(false);
+                closeModal();
+            }
         });
 
+        loadIconsSprite();
+        initUrlState();
         loadData();
     </script>
 </body>
