@@ -43,6 +43,5 @@ jobs:
             echo "No data changes"
             exit 0
           fi
-          git pull --rebase origin main
           git commit -m "Auto-update tank marks"
           git push
