@@ -47,6 +47,5 @@ jobs:
             echo "No catalog changes"
             exit 0
           fi
-          git pull --rebase origin main
           git commit -m "Refresh vehicle catalog"
           git push
